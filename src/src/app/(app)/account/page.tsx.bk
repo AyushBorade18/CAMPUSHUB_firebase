@@ -1,0 +1,190 @@
+'use client';
+
+import { useState, useRef, useEffect, useMemo } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Camera } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { useFirebase, useDoc, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
+import { colleges } from '@/lib/data';
+import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+
+type UserProfile = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  collegeId: string;
+};
+
+export default function AccountPage() {
+  const { user, firestore } = useFirebase();
+  const { toast } = useToast();
+  
+  const userDocRef = useMemoFirebase(() => {
+    if (!user || !firestore) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [user, firestore]);
+
+  const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userDocRef);
+
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [avatar, setAvatar] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (userProfile) {
+      setName(`${userProfile.firstName} ${userProfile.lastName}`);
+      setEmail(userProfile.email);
+    }
+    if (user?.photoURL) {
+      setAvatar(user.photoURL);
+    }
+  }, [userProfile, user]);
+
+  const collegeName = useMemo(() => {
+    if (!userProfile?.collegeId) return 'Loading College...';
+    const collegeInfo = colleges.find(c => c.id === userProfile.collegeId);
+    return collegeInfo?.name || 'Unknown College';
+  }, [userProfile?.collegeId]);
+
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) { // 2MB limit
+        toast({
+            variant: "destructive",
+            title: "Image too large",
+            description: "Please upload an image smaller than 2MB.",
+        });
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setAvatar(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!userDocRef || !userProfile) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Could not update profile. User data not loaded.",
+      });
+      return;
+    };
+      
+    const [firstName, ...lastNameParts] = name.split(' ');
+    const lastName = lastNameParts.join(' ');
+    
+    const updatedData = { 
+      firstName, 
+      lastName, 
+      email 
+    };
+
+    updateDocumentNonBlocking(userDocRef, updatedData);
+    
+    toast({
+        title: "Profile Updated",
+        description: "Your profile information has been saved.",
+    });
+  }
+
+  const getInitials = (nameStr: string) => {
+    if (!nameStr || nameStr.trim() === '') return user?.email?.[0].toUpperCase() || 'U';
+    const nameParts = nameStr.trim().split(' ').filter(Boolean);
+    if (nameParts.length === 0) return 'U';
+    if (nameParts.length === 1 && nameParts[0].length > 0) return nameParts[0][0].toUpperCase();
+    return (nameParts[0][0] + (nameParts.length > 1 ? nameParts[nameParts.length - 1][0] : '')).toUpperCase();
+  }
+
+  if (isProfileLoading) {
+    return <div className="p-8 text-center">Loading profile...</div>
+  }
+
+  if (!userProfile && !isProfileLoading) {
+    return (
+      <div className="p-8 text-center text-red-600">
+        <h2 className="text-xl font-bold mb-2">Could not load user profile.</h2>
+        <p>This can happen if the user document was not created correctly during registration.</p>
+        <p>Please try registering again.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-4 sm:p-6 lg:p-8 space-y-8 max-w-4xl mx-auto">
+      <Card>
+        <CardHeader>
+          <CardTitle className="font-headline text-2xl">Your Profile</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="flex items-center gap-6">
+              <div className="relative">
+                <Avatar className="h-24 w-24 border">
+                  {avatar && <AvatarImage src={avatar} alt={name} />}
+                  <AvatarFallback>{getInitials(name)}</AvatarFallback>
+                </Avatar>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute bottom-0 right-0 rounded-full bg-background/70 hover:bg-background"
+                  onClick={handleAvatarClick}
+                >
+                  <Camera className="h-5 w-5" />
+                  <span className="sr-only">Change profile picture</span>
+                </Button>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  className="hidden"
+                  accept="image/png, image/jpeg, image/gif"
+                />
+              </div>
+              <div className='flex-grow'>
+                <h2 className="text-2xl font-bold font-headline">{name || 'Your Name'}</h2>
+                <p className="text-muted-foreground">{collegeName}</p>
+              </div>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="grid gap-2">
+                <Label htmlFor="name">Full Name</Label>
+                <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Add your name" />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@college.edu" />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="college">College</Label>
+                <Input id="college" value={collegeName} readOnly className="cursor-not-allowed bg-muted/50" />
+              </div>
+            </div>
+
+            <div className="flex justify-end">
+              <Button type="submit">Save Changes</Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

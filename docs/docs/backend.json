@@ -1,0 +1,95 @@
+
+{
+  "entities": {
+    "College": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "College",
+      "type": "object",
+      "description": "Represents a college or university.",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier for the college." },
+        "name": { "type": "string", "description": "The name of the college." },
+        "location": { "type": "string", "description": "The geographical location of the college." },
+        "domain": { "type": "string", "description": "The domain name for the college, often used for email addresses.", "format": "uri" }
+      },
+      "required": ["id", "name"]
+    },
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the Campus Hub application.",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier for the user." },
+        "collegeId": { "type": "string", "description": "Reference to College. (Relationship: College 1:N User)" },
+        "username": { "type": "string", "description": "The username of the user." },
+        "email": { "type": "string", "description": "The email address of the user.", "format": "email" },
+        "firstName": { "type": "string", "description": "The first name of the user." },
+        "lastName": { "type": "string", "description": "The last name of the user." },
+        "registrationDate": { "type": "string", "description": "The date and time the user registered.", "format": "date-time" }
+      },
+      "required": ["id", "collegeId", "username", "email"]
+    },
+    "Item": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Item",
+      "type": "object",
+      "description": "Represents an item that is either lost, found, for sale, or for borrowing.",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier for the item." },
+        "userId": { "type": "string", "description": "Reference to User. (Relationship: User 1:N Item)" },
+        "title": { "type": "string", "description": "The title or name of the item." },
+        "description": { "type": "string", "description": "A detailed description of the item." },
+        "category": { "type": "string", "description": "The category of the item: 'buy-sell', 'borrow-lend', 'lost-found'." },
+        "itemType": { "type": "string", "description": "The type of the item, e.g., Electronics, Books, Clothing.", "enum": ["Electronics", "Furniture", "Books", "Clothing", "Stationery", "Other"] },
+        "status": { "type": "string", "description": "The current status of the item (e.g., available, sold, borrowed, lost, found)." },
+        "condition": { "type": "string", "description": "The condition of the item.", "enum": ["New", "Like New", "Good", "Fair"] },
+        "datePosted": { "type": "string", "description": "The date and time the item was posted.", "format": "date-time" },
+        "imageUrl": { "type": "string", "description": "URL of the item's image", "format": "uri" },
+        "price": { "type": "number", "description": "The price of the item for 'buy-sell'." },
+        "rate": { "type": "string", "description": "The borrowing rate for 'borrow-lend' items (e.g., '₹50/day')." },
+        "location": { "type": "string", "description": "The last known location for 'lost-found' items." },
+        "contactName": { "type": "string", "description": "The name of the person to contact for the item." },
+        "contactEmail": { "type": "string", "description": "The email address for contacting the person.", "format": "email" },
+        "contactNumber": { "type": "string", "description": "The phone number for contacting the person." }
+      },
+      "required": ["id", "userId", "title", "category", "status", "contactName", "contactNumber"]
+    },
+    "Admin": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Admin",
+      "type": "object",
+      "description": "Represents an administrator user with elevated privileges.",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier for the administrator." },
+        "username": { "type": "string", "description": "The username of the administrator." },
+        "email": { "type": "string", "description": "The email address of the administrator.", "format": "email" },
+        "role": { "type": "string", "description": "The role of the administrator (e.g., superadmin, moderator)." },
+        "lastLogin": { "type": "string", "description": "The date and time the administrator last logged in.", "format": "date-time" }
+      },
+      "required": ["id", "username", "email", "role"]
+    }
+  },
+  "auth": { "providers": ["password", "anonymous", "google.com"] },
+  "firestore": {
+    "structure": [
+      {
+        "path": "colleges/{collegeId}",
+        "definition": { "entityName": "College", "schema": { "$ref": "#/entities/College" }, "description": "Stores college information." }
+      },
+      {
+        "path": "users/{userId}",
+        "definition": { "entityName": "User", "schema": { "$ref": "#/entities/User" }, "description": "Stores user profiles." }
+      },
+      {
+        "path": "colleges/{collegeId}/items/{itemId}",
+        "definition": { "entityName": "Item", "schema": { "$ref": "#/entities/Item" }, "description": "Stores all item listings for a specific college." }
+      },
+      {
+        "path": "roles_admin/{userId}",
+        "definition": { "entityName": "Admin", "schema": { "$ref": "#/entities/Admin" }, "description": "Grants admin privileges." }
+      }
+    ],
+    "reasoning": "The Firestore data structure is designed to support Campus Hub's core features. A key change is moving 'items' to a top-level collection. This denormalizes the data slightly but makes querying for items across all users (e.g., for the main marketplace feeds) much more efficient and scalable, avoiding the need for collection group queries in many common scenarios. User-specific data remains in the /users/{userId} path."
+  }
+}

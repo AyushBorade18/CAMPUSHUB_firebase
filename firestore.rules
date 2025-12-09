@@ -1,0 +1,123 @@
+
+/**
+ * Core Philosophy: This ruleset enforces a multi-tiered security model tailored for a campus application.
+ * It combines public data, role-based access control (Admins), and a strict user-ownership model. The primary
+ * goal is to ensure users have complete control over their own data (profiles, items) while allowing for
+ * administrative oversight and trusted community interactions.
+ *
+ * Data Structure:
+ * - /colleges/{collegeId}: Publicly readable information about each college.
+ *     - /items/{itemId}: Items for sale/lost/found, nested under a college for data separation.
+ * - /users/{userId}: Private user profiles, at the top level for easy lookup.
+ * - /roles_admin/{userId}: A restricted collection where the existence of a document grants a user admin privileges.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // -------------------------------------------------------------------------
+    // Helper Functions
+    // -------------------------------------------------------------------------
+
+    /**
+     * Checks if a user is authenticated.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * Checks if the authenticated user's UID matches the provided userId.
+     * This is the foundation of the user-ownership model.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    
+    /**
+     * Checks ownership of a resource that is about to be created.
+     */
+    function isCreatingOwner() {
+      return isOwner(request.resource.data.userId);
+    }
+    
+     /**
+     * Checks ownership of an existing resource for update/delete.
+     */
+    function isExistingOwner() {
+      return isOwner(resource.data.userId);
+    }
+
+    /**
+     * Checks if the authenticated user has administrative privileges by
+     * verifying the existence of a document in the 'roles_admin' collection.
+     */
+    function isAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+    }
+    
+    /**
+     * Checks if the requesting user belongs to the same college as the item they are trying to access.
+     * It compares the user's collegeId with the collegeId stored on the item document.
+     */
+    function isCollegeMemberByItem() {
+        // This function now handles cases where resource might be null (e.g., during list).
+        // For a 'get' request on an item, `resource` will be the item document itself.
+        // We can get the collegeId from its path.
+        let itemCollegeId = resource.__name__[1];
+        let userCollegeId = get(/databases/$(database)/documents/users/$(request.auth.uid)).data.collegeId;
+        return userCollegeId == itemCollegeId;
+    }
+
+
+    // -------------------------------------------------------------------------
+    // Collection Rules
+    // -------------------------------------------------------------------------
+
+    /**
+     * @description Public college information and their nested item collection.
+     */
+    match /colleges/{collegeId} {
+      allow get: if true;
+      allow write: if isAdmin();
+      
+      /**
+       * @description Items collection nested under each college.
+       * Users can only interact with items within their own college.
+       */
+      match /items/{itemId} {
+        // A user can read or list items if their collegeId matches the collection's collegeId.
+        allow list, get: if isSignedIn()
+                          && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.collegeId == collegeId;
+
+        // A user can only create an item that belongs to their own college.
+        allow create: if isCreatingOwner()
+                       && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.collegeId == collegeId;
+                       
+        // Only the user who created the item can update or delete it.
+        allow update, delete: if isExistingOwner();
+      }
+    }
+    
+    /**
+     * @description User profile documents and their subcollections.
+     */
+    match /users/{userId} {
+      allow get: if isSignedIn();
+      allow list: if false; // Do not allow listing all users.
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      // Allow user to update their own profile.
+      allow update: if isOwner(userId)
+                    && request.resource.data.id == resource.data.id;
+      allow delete: if isOwner(userId);
+    }
+
+    /**
+     * @description Manages administrator roles.
+     */
+    match /roles_admin/{userId} {
+      allow get, list: if isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+  }
+}

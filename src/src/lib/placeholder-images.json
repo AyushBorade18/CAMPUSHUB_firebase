@@ -1,0 +1,88 @@
+{
+  "placeholderImages": [
+    {
+      "id": "user1",
+      "description": "User Avatar 1",
+      "imageUrl": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjQ5MjI1MDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person portrait"
+    },
+    {
+      "id": "user2",
+      "description": "User Avatar 2",
+      "imageUrl": "https://images.unsplash.com/photo-1610012525054-b6ab57df6105?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxzdHVkZW50JTIwc21pbGluZ3xlbnwwfHx8fDE3NjQ5Mzk3NDZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "student smiling"
+    },
+    {
+      "id": "user3",
+      "description": "User Avatar 3",
+      "imageUrl": "https://images.unsplash.com/photo-1499257398700-43669759a540?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwZXJzb24lMjByZWFkaW5nfGVufDB8fHx8MTc2NDk0MTA2MHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person reading"
+    },
+    {
+      "id": "user4",
+      "description": "User Avatar 4",
+      "imageUrl": "https://images.unsplash.com/photo-1557053910-d9eadeed1c58?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc2NDkwODIwMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman portrait"
+    },
+    {
+      "id": "laptop1",
+      "description": "A modern laptop on a desk",
+      "imageUrl": "https://images.unsplash.com/photo-1455894127589-22f75500213a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxsYXB0b3AlMjBkZXNrfGVufDB8fHx8MTc2NDg1NDQ2N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "laptop desk"
+    },
+    {
+      "id": "books1",
+      "description": "A stack of textbooks",
+      "imageUrl": "https://images.unsplash.com/photo-1682235336380-f6ccad180553?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8c3RhY2slMjBib29rc3xlbnwwfHx8fDE3NjQ5NDIzNTV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "stack books"
+    },
+    {
+      "id": "bike1",
+      "description": "A city bike parked on campus",
+      "imageUrl": "https://images.unsplash.com/photo-1727397787224-bf715a7aa104?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxiaWN5Y2xlJTIwY2FtcHVzfGVufDB8fHx8MTc2NDk1MzU2OHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "bicycle campus"
+    },
+    {
+      "id": "camera1",
+      "description": "A DSLR camera",
+      "imageUrl": "https://images.unsplash.com/photo-1608186286925-8c0e1c1fbeac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxjYW1lcmElMjBsZW5zfGVufDB8fHx8MTc2NDg3MTA5MXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "camera lens"
+    },
+    {
+      "id": "keys1",
+      "description": "A set of lost keys on the ground",
+      "imageUrl": "https://images.unsplash.com/photo-1533696848654-6bdf438edea4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxsb3N0JTIwa2V5c3xlbnwwfHx8fDE3NjQ5NTM1Njh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "lost keys"
+    },
+    {
+      "id": "wallet1",
+      "description": "A brown leather wallet found on a bench",
+      "imageUrl": "https://images.unsplash.com/photo-1620109176813-e91290f6c795?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxsZWF0aGVyJTIwd2FsbGV0fGVufDB8fHx8MTc2NDgzMjgzMHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "leather wallet"
+    },
+    {
+      "id": "headphone1",
+      "description": "Wireless headphones on a table",
+      "imageUrl": "https://images.unsplash.com/photo-1609081219090-a6d81d3085bf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx3aXJlbGVzcyUyMGhlYWRwaG9uZXN8ZW58MHx8fHwxNzY0ODYzMTgwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "wireless headphones"
+    },
+    {
+      "id": "backpack1",
+      "description": "A lost student backpack",
+      "imageUrl": "https://images.unsplash.com/photo-1594608661623-aa0bd3a69d98?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8c3R1ZGVudCUyMGJhY2twYWNrfGVufDB8fHx8MTc2NDk1MzU2OHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "student backpack"
+    },
+    {
+      "id": "guitar1",
+      "description": "An acoustic guitar available to borrow",
+      "imageUrl": "https://images.unsplash.com/photo-1715431150006-1f03ea6e4a37?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8YWNvdXN0aWMlMjBndWl0YXJ8ZW58MHx8fHwxNzY0ODMwMzYyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "acoustic guitar"
+    },
+    {
+      "id": "projector1",
+      "description": "A mini projector for presentations",
+      "imageUrl": "https://images.unsplash.com/photo-1535016120720-40c646be5580?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtaW5pJTIwcHJvamVjdG9yfGVufDB8fHx8MTc2NDk1MzU2OHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "mini projector"
+    }
+  ]
+}

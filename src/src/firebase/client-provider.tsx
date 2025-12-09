@@ -1,0 +1,24 @@
+'use client';
+
+import React, { type ReactNode } from 'react';
+import { FirebaseProvider } from '@/firebase/provider';
+import { initializeFirebase } from '@/firebase/config';
+
+interface FirebaseClientProviderProps {
+  children: ReactNode;
+}
+
+// Initialize Firebase on the client side, once.
+const firebaseServices = initializeFirebase();
+
+export function FirebaseClientProvider({ children }: FirebaseClientProviderProps) {
+  return (
+    <FirebaseProvider
+      firebaseApp={firebaseServices.firebaseApp}
+      auth={firebaseServices.auth}
+      firestore={firebaseServices.firestore}
+    >
+      {children}
+    </FirebaseProvider>
+  );
+}
